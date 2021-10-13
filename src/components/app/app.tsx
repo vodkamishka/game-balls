@@ -1,9 +1,14 @@
-import React, {FC} from 'react';
-import './app.css';
+import React, {FC} from "react";
+import "./app.sass";
+import Frame from "../frame/frame";
 
 const App: FC = () => {
+
     return (
-        <div>Hello Andru</div>
+        <div className='app'>
+            <Frame/>
+        </div>
+
     )
 }
 

@@ -1,14 +1,14 @@
 import {composeWithDevTools} from 'redux-devtools-extension';
-import {configureStore, combineReducers} from "@reduxjs/toolkit";
+import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import reducer from './reducer';
 
-const rootReducer = combineReducers({
-    reducer
+export const rootReducer = combineReducers({
+    balls: reducer
 })
 
 export const store = configureStore({
-    reducer,
-    composeWithDevTools,
+    reducer: rootReducer
 });
 
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof rootReducer>
+export type AppDispatch = typeof store.dispatch
