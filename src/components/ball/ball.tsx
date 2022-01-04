@@ -2,7 +2,7 @@ import React, {FC, useState} from "react";
 import "./ball.sass"
 import {useActions} from "../../hooks/useActions";
 
-enum BallEnum {
+export enum BallEnum {
     "blue", 
     "green",
     "grey",

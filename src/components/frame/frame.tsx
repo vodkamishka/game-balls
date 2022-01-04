@@ -3,10 +3,11 @@ import "./frame.sass";
 import {useActions} from "../../hooks/useActions";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
 import Ball from "../ball/ball";
+import {checkMatches} from "../../utils";
 
 const Frame: FC = () => {
 
-    const {addColor, createMatrix} = useActions();
+    const {addColor, createMatrix, removeBallsOneColor} = useActions();
 
     const {balls} = useTypedSelector(state => state.balls);
 
@@ -14,6 +15,8 @@ const Frame: FC = () => {
         createMatrix();
         addColor();
     }, [])
+
+
 
     return (
         <div className="frame">

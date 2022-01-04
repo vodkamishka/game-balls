@@ -6,11 +6,12 @@ import {
     findBallsOneColorGorizontal,
     findBallsOneColorVertical, createNewRow, createNewColumn
 } from "../utils";
+import {BallEnum} from "../components/ball/ball";
 
-interface IBalls {
+export interface IBalls {
     x: number,
     y: number,
-    color?: number
+    color?: number | undefined
 }
 
 interface IState {
@@ -28,6 +29,17 @@ interface IMoveBall {
     downY: number
     upX: number
     upY: number
+}
+
+const checkColor = (balls: any, x: number,y: number) => {
+    let color;
+    while (true) {
+        color = randomColor();
+        if (checkColorBalls(balls, x,y, color)) {
+            break;
+        }
+    }
+    return color;
 }
 
 export const ballsSlice = createSlice({
@@ -94,55 +106,60 @@ export const ballsSlice = createSlice({
         removeBallsOneColor(state) {
 
             const balls = JSON.parse(JSON.stringify(state.balls));
-            const countX = findBallsOneColorGorizontal(balls)?.countX;
-            const posX = findBallsOneColorGorizontal(balls)?.posX;
-            const countY = findBallsOneColorVertical(balls)?.countY;
-            const posY = findBallsOneColorVertical(balls)?.posY;
+            const matchX = findBallsOneColorGorizontal(balls);
 
-            console.log(posX)
+            const matchY = findBallsOneColorVertical(balls);
 
-            if (posY && posY.y >=0 && posY.x >= 0) {
 
-                for (let y = posY.y; y > 0; y--) {
-                    balls[y + countY! - 1][posY.x].color = balls[y - 1][posY.x].color;
-                }
-                for (let y = posY.y; y > 0; y--) {
-                    while (true) {
-                        let color = randomColor();
-                        if (createNewColumn(balls, posY.x, y, color)) {
-                            balls[y][posY.x].color = color;
-                            break;
+            console.log('matchX', matchX);
+            console.log('matchY', matchY);
+
+            matchY.forEach((match: any) => {
+                const posY = match.posY;
+                const countY = match.countY;
+                if (posY) {
+
+                    for (let y = posY.y; y > posY.y - countY!; y--) {
+                        balls[y][posY.x].color = balls[y - countY!] ? balls[y - countY!][posY.x].color : checkColor(balls, posY.x, y);
+                    }
+                    for (let y = posY.y - countY!; y >= 0; y--) {
+                        while (true) {
+                            let color = randomColor();
+                            if (createNewColumn(balls, posY.x, y, color)) {
+                                balls[y][posY.x].color = color;
+                                break;
+                            }
                         }
                     }
                 }
+            })
 
-            }
+            matchX.forEach((match: any) => {
 
-            if (posX && posX.x >=0 && posX.x >= 0) {
+                const posX = match.posX;
+                const countX = match.countX;
 
-                for (let y = posX.y; y > 0; y--) {
-                    for (let x = posX.x; x < posX.x + countX!; x++) {
-                        balls[y][x].color = balls[y-1][x].color;
+                if (posX) {
+                    for (let y = posX.y; y >= posX.y - 1; y--) {
+                        for (let x = posX.x; x > posX.x - countX!; x--) {
+                            balls[posX.y][x].color = balls[posX.y - 1] ? balls[posX.y - 1][x].color : randomColor();
+                        }
                     }
-                }
-
-                for (let x = posX.x; x < posX.x + countX!; x++) {
-                    while (true) {
-                        let color = randomColor();
-                        if (createNewRow(balls, x, color)) {
-                            balls[0][x].color = color;
-                            break;
+                    for (let x = posX.x; x > posX.x - countX!; x--) {
+                        while (true) {
+                            let color = randomColor();
+                            if (createNewRow(balls, x, color)) {
+                                balls[0][x].color = color;
+                                break;
+                            }
                         }
                     }
                 }
+            });
 
 
-
-
-            }
 
             state.balls = balls;
-
 
         }
     },
